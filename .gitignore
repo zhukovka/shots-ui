@@ -65,3 +65,4 @@ fabric.properties
 /shots-ui.iml
 !/node_modules/
 /dist/bundle.js
+/node_modules/
