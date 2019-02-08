@@ -2,9 +2,9 @@ import {BasicChart, Bounds, Coords} from "./D3Chart";
 import * as d3 from "d3";
 
 //[[xTL, yTL, xTR, yTR, xBL, yBL, xBR, yBR]]
-class FrameChart extends BasicChart<[number, number][][]> {
+class FrameChart extends BasicChart<[number, number][]> {
 
-    constructor (dataset: [number, number][][], frame: Coords, bounds: Bounds) {
+    constructor (dataset: [number, number][], frame: Coords, bounds: Bounds) {
         super(dataset, frame);
         this.setScales(bounds);
     }
@@ -15,7 +15,7 @@ class FrameChart extends BasicChart<[number, number][][]> {
         this.xScale = d3.scaleLinear().domain([minX, maxX]).range([left, right]);
     }
 
-    update (dataset: [number, number][][], svg: d3.Selection<any, any, HTMLElement, any>) {
+    update (dataset: [number, number][], svg: d3.Selection<any, any, HTMLElement, any>) {
         this.dataset = dataset;
         this.render(svg);
     }
@@ -24,25 +24,23 @@ class FrameChart extends BasicChart<[number, number][][]> {
 
         let line = d3.line()
         // .defined((d: any) => !isNaN(d))
-            .x((d: any, i) => this.xScale(d[0]))
-            .y((d: any, i) => {
+            .x((d: any) => this.xScale(d[0]))
+            .y((d: any) => {
                 return this.yScale(d[1]);
             });
-        let fn: any = (d: [number, number][]) => {
-            return line(d);
-        };
-        let dataBound = svg.selectAll("path")
-            .data(this.dataset);
 
+        let dataset = this.dataset.concat([this.dataset[0]]);
+        let dataBound = svg.selectAll("path")
+            .data([dataset]);
         //first render
         let entering = dataBound.enter();
 
         entering
             .append("path")
-            .attr("d", fn);
+            .attr("d", line);
 
         // updated dataset
-        dataBound.attr("d", fn);
+        dataBound.attr("d", line);
     }
 
 }

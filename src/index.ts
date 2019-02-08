@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import LineChart from "./LineChart";
 import {DataSet} from "./D3Chart";
 import FrameChart from "./FrameChart";
+import EditableFrame from "./EditableFrame";
 
 
 //fn, xTL, yTL, xTR, yTR, xBL, yBL, xBR, yBR
@@ -72,7 +73,6 @@ function toLinePoints (d: number[], w: number, h: number): [number, number][] {
     points[1] = [d[2] + w, d[3]];
     points[2] = [d[6] + w, d[7] + h];
     points[3] = [d[4], d[5] + h];
-    points[4] = points[0];
     return points;
 }
 
@@ -94,7 +94,7 @@ async function visualizeData () {
         .attr("stroke-width", 1);
 
     let points = toLinePoints([0, 0, 0, 0, 0, 0, 0, 0], video.width, video.height);
-    const baseFrame = new FrameChart([points], vframe, vbounds);
+    const baseFrame = new FrameChart(points, vframe, vbounds);
     baseFrame.render(videoSVG);
 
     let homographySVG = frameSVG.append("g")
@@ -102,7 +102,7 @@ async function visualizeData () {
         .attr("stroke", "red")
         .attr("stroke-width", 1.5);
     let framePoints = toLinePoints(deltas[0].slice(1), video.width, video.height);
-    const homographyFrame = new FrameChart([framePoints], vframe, vbounds);
+    const homographyFrame = new EditableFrame(framePoints, vframe, vbounds);
     homographyFrame.render(homographySVG);
 
     let svg = d3.select("#chart");
@@ -113,8 +113,8 @@ async function visualizeData () {
         console.log(x, y);
         console.log(deltas[x]);
         let framePoints = toLinePoints(deltas[x].slice(1), video.width, video.height);
-        console.log(framePoints)
-        homographyFrame.update([framePoints], homographySVG);
+        console.log(framePoints);
+        homographyFrame.update(framePoints, homographySVG);
     };
 
 }
